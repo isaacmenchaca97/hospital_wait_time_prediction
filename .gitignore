@@ -1,0 +1,5 @@
+# Ignore Fiels
+.idea
+.DS_Store
+Database/
+MODELOS/
