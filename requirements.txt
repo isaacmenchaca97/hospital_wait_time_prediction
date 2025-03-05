@@ -1,0 +1,7 @@
+openpyxl
+pingouin
+tensorflow==2.15.0
+mlflow
+pandas
+scikit-learn
+numpy
