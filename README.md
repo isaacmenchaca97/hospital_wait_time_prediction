@@ -58,6 +58,5 @@ This project is open-source and available under the MIT License.
 
 ## Acknowledgments
 
-- Data sourced from hospital records and publicly available datasets.
 - Inspired by real-world applications in healthcare analytics.
 
