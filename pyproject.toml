@@ -38,6 +38,7 @@ dependencies = [
     "openpyxl",
     "gender_guesser",
     "gensim",
+    "plotly",
 ]
 requires-python = "~=3.9.0"
 
