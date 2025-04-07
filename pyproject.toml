@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "awscli",
+    "boto3",
     "gender_guesser",
     "gensim",
     "ipython",
@@ -32,8 +33,10 @@ dependencies = [
     "pip",
     "plotly",
     "pytest",
+    "python-dateutil",
     "python-dotenv",
     "ruff",
+    "sagemaker",
     "scikit-learn",
     "seaborn",
     "tensorflow==2.15.0",

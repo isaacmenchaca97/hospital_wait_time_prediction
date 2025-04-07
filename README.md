@@ -1,62 +1,131 @@
-# Hospital Wait Time Prediction
+# Hospital Wait Time Prediction - Data Cleaning with SageMaker
 
-## Overview
+This project implements a data cleaning pipeline for hospital wait time prediction using Amazon SageMaker. The implementation leverages various SageMaker features including Processing Jobs, Feature Store, Data Quality Monitoring, and Random Cut Forest for outlier detection.
 
-This project aims to predict hospital wait times using machine learning techniques. The model is designed to assist hospitals in better managing patient flow and reducing waiting periods based on historical data.
+## Prerequisites
 
-## Dataset
+- AWS Account with appropriate permissions
+- Python 3.7+
+- AWS CLI configured
+- Required Python packages (install using `pip install -r requirements.txt`):
+  - boto3
+  - sagemaker
+  - pandas
+  - numpy
+  - scikit-learn
 
-The dataset includes various features related to hospital visits, such as:
+## Project Structure
 
-- Patient demographics (age, gender, etc.)
-- Time-related features (hour, day, month, etc.)
-- Patient classification
-- Previous wait times
+```
+.
+├── README.md
+├── requirements.txt
+├── sagemaker_data_cleaning.py    # Main SageMaker pipeline implementation
+└── preprocessing_script.py       # Data preprocessing script for SageMaker Processing Jobs
+```
 
-## Model Architecture
+## Setup
 
-The model utilizes regression techniques, including K-Nearest Neighbors, Decision Trees, and a Multilayer Perceptron Neural Network, to predict wait times based on input features.
+1. Install the required packages:
+```bash
+pip install -r requirements.txt
+```
 
-## Installation & Requirements
+2. Configure your AWS credentials:
+```bash
+aws configure
+```
 
-To run this project, ensure you have the following installed:
+3. Create an S3 bucket for storing data and artifacts:
+```bash
+aws s3 mb s3://your-bucket-name
+```
 
-- Python 3.x
-- Libraries: `pandas`, `numpy`, `scikit-learn`, `matplotlib`, `tensorflow==2.15.0`
+4. Create an IAM role with the following permissions:
+   - AmazonSageMakerFullAccess
+   - AmazonS3FullAccess
+   - AWSCloudFormationFullAccess
 
 ## Usage
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/isaacmenchaca97/hospital_wait_time_prediction.git
-   cd hospital_wait_time_prediction
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run the model training script:
-   ```bash
-   python train_model.py
-   ```
+1. Update the AWS configuration in `sagemaker_data_cleaning.py`:
+```python
+role_arn = 'your-role-arn'
+bucket_name = 'your-bucket-name'
+```
 
-## Results
+2. Upload your raw data to S3:
+```bash
+aws s3 cp data.csv s3://your-bucket-name/raw-data/
+```
 
-- The trained model provides estimated wait times based on input features.
-- Performance metrics used: K-NN (RMSE: 5.91), Decision Trees (RMSE: 1.99), and MLP (RMSE: 0.39).
-![Screenshot 2025-02-11 at 12 41 59 p m](https://github.com/user-attachments/assets/728b3af1-01f0-4a44-8244-9adb99211afe)
-![Screenshot 2025-02-11 at 12 43 37 p m](https://github.com/user-attachments/assets/a0b3c1c1-ad51-45e9-91df-ad4790dbb6c4)
+3. Run the data cleaning pipeline:
+```bash
+python sagemaker_data_cleaning.py
+```
 
-## Future Improvements
+## Pipeline Components
 
-- Enhance feature engineering to improve model accuracy.
-- Implement real-time prediction using a web-based API.
+### 1. Data Processing
+- Removes duplicate records
+- Handles missing values
+- Processes date features
+- Detects outliers using z-score method
+- Encodes categorical variables
+- Scales numerical features
+
+### 2. Feature Store
+- Creates a Feature Group for storing processed features
+- Enables online and offline feature access
+- Maintains feature versioning
+
+### 3. Data Quality Monitoring
+- Monitors data quality metrics
+- Generates alerts for data drift
+- Tracks feature statistics
+
+### 4. Outlier Detection
+- Uses SageMaker Random Cut Forest algorithm
+- Identifies anomalies in numerical features
+- Flags potential data quality issues
+
+## Output
+
+The pipeline produces the following outputs in your S3 bucket:
+
+1. Processed Data:
+   - `s3://your-bucket-name/processed-data/processed_data.csv`
+   - `s3://your-bucket-name/processed-data/processing_summary.json`
+
+2. Feature Store:
+   - `s3://your-bucket-name/feature-store/`
+
+3. Monitoring Results:
+   - `s3://your-bucket-name/monitoring/`
+
+## Monitoring and Maintenance
+
+1. Monitor data quality:
+   - Access CloudWatch metrics for data quality
+   - Review monitoring reports in SageMaker Studio
+
+2. Update feature definitions:
+   - Modify `preprocessing_script.py` for new features
+   - Update Feature Store schema as needed
+
+3. Pipeline maintenance:
+   - Adjust processing resources based on data volume
+   - Update monitoring thresholds as needed
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-This project is open-source and available under the MIT License.
-
-## Acknowledgments
-
-- Inspired by real-world applications in healthcare analytics.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
