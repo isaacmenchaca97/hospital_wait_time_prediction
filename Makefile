@@ -44,10 +44,11 @@ format:
 .PHONY: test
 test:
 	python -m pytest tests
+
 ## Download Data from storage system
 .PHONY: sync_data_down
 sync_data_down:
-	aws s3 sync s3://bucket-name/data/ \
+	aws s3 sync s3://sagemaker-studio-843859520736-rej4s66nhci/data \
 		data/ 
 	
 
@@ -55,7 +56,7 @@ sync_data_down:
 .PHONY: sync_data_up
 sync_data_up:
 	aws s3 sync data/ \
-		s3://bucket-name/data 
+		s3://sagemaker-studio-843859520736-rej4s66nhci/data 
 	
 
 
