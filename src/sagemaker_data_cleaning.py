@@ -116,7 +116,7 @@ class HospitalDataCleaner:
                     destination=f's3://{self.bucket}/processed-data'
                 )
             ],
-            code='preprocessing_script.py'
+            code='cleaning_script.py'
         )
         
         # Create the pipeline
