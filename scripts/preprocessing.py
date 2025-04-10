@@ -11,6 +11,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-data', type=str, required=True)
     parser.add_argument('--output-data', type=str, required=True)
+    parser.add_argument("--train-ratio", type=float, default=0.8)
+    parser.add_argument("--validation-ratio", type=float, default=0.1)
+    parser.add_argument("--test-ratio", type=float, default=0.1)
     return parser.parse_args()
 
 

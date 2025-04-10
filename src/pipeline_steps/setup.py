@@ -3,6 +3,7 @@
 import boto3
 import sagemaker
 from sagemaker.workflow.parameters import ParameterBoolean, ParameterInteger, ParameterString
+
 from src.config import INSTANCE_TYPE_M4_XL
 
 
