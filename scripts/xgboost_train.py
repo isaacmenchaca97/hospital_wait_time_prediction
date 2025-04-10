@@ -1,10 +1,11 @@
 import argparse
-import os
-import joblib
 import json
+import os
+
+import joblib
 import pandas as pd
-import xgboost as xgb
 from sklearn.metrics import roc_auc_score
+import xgboost as xgb
 
 
 def parse_args():
@@ -24,9 +25,13 @@ def parse_args():
 
     # SageMaker specific arguments
     parser.add_argument("--train_data_dir", type=str, default=os.environ.get("SM_CHANNEL_TRAIN"))
-    parser.add_argument("--validation_data_dir", type=str, default=os.environ.get("SM_CHANNEL_VALIDATION"))
+    parser.add_argument(
+        "--validation_data_dir", type=str, default=os.environ.get("SM_CHANNEL_VALIDATION")
+    )
     parser.add_argument("--model_dir", type=str, default=os.environ.get("SM_MODEL_DIR"))
-    parser.add_argument("--output_data_dir", type=str, default=os.environ.get("SM_OUTPUT_DATA_DIR"))
+    parser.add_argument(
+        "--output_data_dir", type=str, default=os.environ.get("SM_OUTPUT_DATA_DIR")
+    )
 
     return parser.parse_args()
 
@@ -34,11 +39,11 @@ def parse_args():
 def load_data(data_dir, filename="data.csv"):
     """
     Load data from the specified directory
-    
+
     Args:
         data_dir (str): Directory containing the data file
         filename (str): Name of the data file
-        
+
     Returns:
         tuple: Features DataFrame and labels Series
     """
@@ -51,12 +56,12 @@ def load_data(data_dir, filename="data.csv"):
 def train_model(args, dtrain, dvalidation):
     """
     Train XGBoost model with cross-validation
-    
+
     Args:
         args: Parsed command line arguments
         dtrain: Training data as DMatrix
         dvalidation: Validation data as DMatrix
-        
+
     Returns:
         tuple: Trained model and metrics
     """
@@ -65,9 +70,9 @@ def train_model(args, dtrain, dvalidation):
         "eta": args.eta,
         "objective": args.objective,
         "subsample": args.subsample,
-        "colsample_bytree": args.colsample_bytree
+        "colsample_bytree": args.colsample_bytree,
     }
-    
+
     # Run cross-validation
     cv_results = xgb.cv(
         params=params,
@@ -76,36 +81,29 @@ def train_model(args, dtrain, dvalidation):
         nfold=args.nfold,
         early_stopping_rounds=args.early_stopping_rounds,
         metrics=[args.eval_metric],
-        seed=42
+        seed=42,
     )
-    
+
     # Train final model
-    model = xgb.train(
-        params=params,
-        dtrain=dtrain,
-        num_boost_round=len(cv_results)
-    )
-    
+    model = xgb.train(params=params, dtrain=dtrain, num_boost_round=len(cv_results))
+
     # Generate predictions
     train_pred = model.predict(dtrain)
     validation_pred = model.predict(dvalidation)
-    
+
     # Calculate metrics
     train_auc = roc_auc_score(dtrain.get_label(), train_pred)
     validation_auc = roc_auc_score(dvalidation.get_label(), validation_pred)
-    
-    metrics = {
-        "train_auc": train_auc,
-        "validation_auc": validation_auc
-    }
-    
+
+    metrics = {"train_auc": train_auc, "validation_auc": validation_auc}
+
     return model, metrics
 
 
 def save_model_artifacts(model, metrics, args):
     """
     Save model artifacts and metrics
-    
+
     Args:
         model: Trained XGBoost model
         metrics (dict): Model metrics
@@ -117,19 +115,19 @@ def save_model_artifacts(model, metrics, args):
             "eta": args.eta,
             "objective": args.objective,
             "subsample": args.subsample,
-            "colsample_bytree": args.colsample_bytree
+            "colsample_bytree": args.colsample_bytree,
         },
         "binary_classification_metrics": {
             "validation:auc": {"value": metrics["validation_auc"]},
-            "train:auc": {"value": metrics["train_auc"]}
-        }
+            "train:auc": {"value": metrics["train_auc"]},
+        },
     }
-    
+
     # Save metrics
     metrics_location = os.path.join(args.output_data_dir, "metrics.json")
     with open(metrics_location, "w") as f:
         json.dump(metrics_data, f)
-    
+
     # Save model
     model_location = os.path.join(args.model_dir, "xgboost-model")
     with open(model_location, "wb") as f:
@@ -139,25 +137,25 @@ def save_model_artifacts(model, metrics, args):
 def main():
     """Main training function"""
     args = parse_args()
-    
+
     # Load data
     train_features, train_labels = load_data(args.train_data_dir, "train.csv")
     validation_features, validation_labels = load_data(args.validation_data_dir, "validation.csv")
-    
+
     # Create DMatrix objects
     dtrain = xgb.DMatrix(train_features, label=train_labels)
     dvalidation = xgb.DMatrix(validation_features, label=validation_labels)
-    
+
     # Train model
     model, metrics = train_model(args, dtrain, dvalidation)
-    
+
     # Log metrics
     print(f"[0]#011train-auc:{metrics['train_auc']:.2f}")
     print(f"[0]#011validation-auc:{metrics['validation_auc']:.2f}")
-    
+
     # Save artifacts
     save_model_artifacts(model, metrics, args)
 
 
 if __name__ == "__main__":
-    main() 
+    main()
