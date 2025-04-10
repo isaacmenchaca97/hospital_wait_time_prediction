@@ -3,7 +3,7 @@
 import boto3
 import sagemaker
 from sagemaker.workflow.parameters import ParameterBoolean, ParameterInteger, ParameterString
-from src.config import INSTANCE_TYPE
+from src.config import INSTANCE_TYPE_M4_XL
 
 
 class HospitalWaitTimePipelineSetUp:
@@ -80,13 +80,13 @@ class HospitalWaitTimePipelineSetUp:
 
     def setup_instance_config(self):
         """Setup instance types and counts"""
-        self.process_instance_type = INSTANCE_TYPE
+        self.process_instance_type = INSTANCE_TYPE_M4_XL
         self.train_instance_count = 1
-        self.train_instance_type = INSTANCE_TYPE
+        self.train_instance_type = INSTANCE_TYPE_M4_XL
         self.predictor_instance_count = 1
-        self.predictor_instance_type = INSTANCE_TYPE
+        self.predictor_instance_type = INSTANCE_TYPE_M4_XL
         self.clarify_instance_count = 1
-        self.clarify_instance_type = INSTANCE_TYPE
+        self.clarify_instance_type = INSTANCE_TYPE_M4_XL
 
     def setup_pipeline_params(self):
         """Setup pipeline parameters"""
@@ -157,8 +157,12 @@ if __name__ == "__main__":
 
     # Additional pipeline steps will be implemented here
     # Such as:
-    # - Data processing
-    # - Model training
-    # - Model evaluation
-    # - Model deployment
+    # - Data Processing
+    # - Train Model
+    # - Evaluate Model
+    # - Create Model
+    # - Bias and Explainability Checks
+    # - Register Model
+    # - Deploy Model
+    # - Model Monitoring
     pass
