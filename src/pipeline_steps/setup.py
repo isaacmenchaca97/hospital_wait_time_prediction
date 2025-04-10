@@ -46,6 +46,7 @@ class HospitalWaitTimePipelineSetUp:
         self.test_data_key = f"{self.write_prefix}/test"
 
         # Full S3 paths
+        self.raw_data_uri = f"{self.raw_data_key}/basededatos_50K.xlsx"
         self.output_data_uri = f"s3://{self.write_bucket}/{self.write_prefix}/"
         self.scripts_uri = f"s3://{self.write_bucket}/{self.write_prefix}/scripts"
         self.estimator_output_uri = f"s3://{self.write_bucket}/{self.write_prefix}/training_jobs"
