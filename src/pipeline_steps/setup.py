@@ -163,8 +163,6 @@ if __name__ == "__main__":
     # - Train Model
     # - Evaluate Model
     # - Create Model
-    # - Bias and Explainability Checks
     # - Register Model
     # - Deploy Model
-    # - Model Monitoring
     pass

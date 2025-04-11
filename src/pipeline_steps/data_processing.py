@@ -28,12 +28,12 @@ class DataProcessingStep:
         """Upload preprocessing script to S3.
 
         Args:
-            script_path: Local path to the preprocessing script. Defaults to 'preprocessing.py'
+            script_path: Local path to the preprocessing script. Defaults to 'process.py'
         """
         self.setup.s3_client.upload_file(
-            Filename="scripts/preprocessing.py",
+            Filename="scripts/process.py",
             Bucket=self.setup.write_bucket,
-            Key=f"{self.setup.write_prefix}/scripts/preprocessing.py",
+            Key=f"{self.setup.write_prefix}/scripts/process.py",
         )
 
     def get_processing_step(self):
@@ -83,5 +83,5 @@ class DataProcessingStep:
                 "--test-ratio",
                 "0.1",
             ],
-            code=f"s3://{self.setup.write_bucket}/{self.setup.write_prefix}/scripts/preprocessing.py",
+            code=f"s3://{self.setup.write_bucket}/{self.setup.write_prefix}/scripts/process.py",
         )
