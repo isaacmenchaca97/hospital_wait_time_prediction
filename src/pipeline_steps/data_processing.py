@@ -3,6 +3,7 @@
 from sagemaker.processing import ProcessingInput, ProcessingOutput
 from sagemaker.sklearn.processing import SKLearnProcessor
 from sagemaker.workflow.steps import ProcessingStep
+from src.pipeline_config import SCRIPTS_DIR
 
 
 class DataProcessingStep:
@@ -31,7 +32,7 @@ class DataProcessingStep:
             script_path: Local path to the preprocessing script. Defaults to 'process.py'
         """
         self.setup.s3_client.upload_file(
-            Filename="scripts/process.py",
+            Filename=f"{SCRIPTS_DIR}/process.py",
             Bucket=self.setup.write_bucket,
             Key=f"{self.setup.write_prefix}/scripts/process.py",
         )
