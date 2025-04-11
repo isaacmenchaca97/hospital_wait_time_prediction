@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from sagemaker.processing import ProcessingInput, ProcessingOutput
 from sagemaker.sklearn.processing import SKLearnProcessor
 from sagemaker.workflow.steps import ProcessingStep
@@ -51,7 +49,7 @@ class DataProcessingStep:
             processor=self.sklearn_processor,
             inputs=[
                 ProcessingInput(
-                    source=self.setup.raw_data_uri, destination="/opt/ml/processing/input"
+                    source=self.setup.hospital_data_uri, destination="/opt/ml/processing/input"
                 )
             ],
             outputs=[
@@ -84,5 +82,5 @@ class DataProcessingStep:
                 "--test-ratio",
                 "0.1",
             ],
-            code=f"s3://{self.setup.write_bucket}/{self.setup.write_prefix}/scripts/process.py",
+            code=f"{self.setup.scripts_uri}/process.py",
         )
