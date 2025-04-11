@@ -15,7 +15,7 @@ from sagemaker.tuner import ContinuousParameter, HyperparameterTuner, IntegerPar
 from sagemaker.xgboost.estimator import XGBoost
 
 
-class HospitalXGBoostTrainer:
+class TrainModel:
     def __init__(self, role_arn, bucket_name, region_name="us-east-1"):
         """
         Initialize the XGBoost trainer with AWS credentials and configurations.
@@ -253,7 +253,7 @@ def main():
     bucket_name = "your-bucket-name"
 
     # Initialize the trainer
-    trainer = HospitalXGBoostTrainer(role_arn, bucket_name)
+    trainer = TrainModel(role_arn, bucket_name)
 
     # Setup training job and hyperparameter tuning
     trainer.setup_training_job()
