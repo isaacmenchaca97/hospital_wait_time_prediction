@@ -5,22 +5,22 @@ from src.pipeline_config import SCRIPTS_DIR
 
 
 class DataProcessingStep:
-    def __init__(self, pipeline_setup):
+    def __init__(self, pipeline_config):
         """Initialize data processing step with pipeline setup configuration.
 
         Args:
-            pipeline_setup: Instance of HospitalWaitTimePipelineSetUp with configuration
+            pipeline_config: Instance of HospitalWaitTimePipelineSetUp with configuration
         """
-        self.setup = pipeline_setup
+        self.config = pipeline_config
 
     def create_processor(self):
         """Create SKLearn processor with setup configuration."""
         self.sklearn_processor = SKLearnProcessor(
             framework_version="0.23-1",
-            role=self.setup.sagemaker_role,
+            role=self.config.sagemaker_role,
             instance_count=1,
-            instance_type=self.setup.process_instance_type,
-            base_job_name=f"{self.setup.base_job_name_prefix}-processing",
+            instance_type=self.config.process_instance_type,
+            base_job_name=f"{self.config.base_job_name_prefix}-processing",
         )
 
     def upload_preprocessing_script(self):
@@ -29,10 +29,10 @@ class DataProcessingStep:
         Args:
             script_path: Local path to the preprocessing script. Defaults to 'process.py'
         """
-        self.setup.s3_client.upload_file(
+        self.config.s3_client.upload_file(
             Filename=f"{SCRIPTS_DIR}/process.py",
-            Bucket=self.setup.write_bucket,
-            Key=f"{self.setup.write_prefix}/scripts/process.py",
+            Bucket=self.config.write_bucket,
+            Key=f"{self.config.write_prefix}/scripts/process.py",
         )
 
     def get_processing_step(self):
@@ -49,27 +49,27 @@ class DataProcessingStep:
             processor=self.sklearn_processor,
             inputs=[
                 ProcessingInput(
-                    source=self.setup.hospital_data_uri, destination="/opt/ml/processing/input"
+                    source=self.config.hospital_data_uri, destination="/opt/ml/processing/input"
                 )
             ],
             outputs=[
                 ProcessingOutput(
-                    destination=f"{self.setup.processing_output_uri}/train_data",
+                    destination=f"{self.config.processing_output_uri}/train_data",
                     output_name="train_data",
                     source="/opt/ml/processing/train",
                 ),
                 ProcessingOutput(
-                    destination=f"{self.setup.processing_output_uri}/validation_data",
+                    destination=f"{self.config.processing_output_uri}/validation_data",
                     output_name="validation_data",
                     source="/opt/ml/processing/val",
                 ),
                 ProcessingOutput(
-                    destination=f"{self.setup.processing_output_uri}/test_data",
+                    destination=f"{self.config.processing_output_uri}/test_data",
                     output_name="test_data",
                     source="/opt/ml/processing/test",
                 ),
                 ProcessingOutput(
-                    destination=f"{self.setup.processing_output_uri}/processed_data",
+                    destination=f"{self.config.processing_output_uri}/processed_data",
                     output_name="processed_data",
                     source="/opt/ml/processing/full",
                 ),
@@ -82,5 +82,5 @@ class DataProcessingStep:
                 "--test-ratio",
                 "0.1",
             ],
-            code=f"{self.setup.scripts_uri}/process.py",
+            code=f"{self.config.scripts_uri}/process.py",
         )

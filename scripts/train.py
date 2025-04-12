@@ -1,27 +1,31 @@
 import argparse
 import json
 import os
+import logging
 
 import joblib
 import pandas as pd
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import numpy as np
 import xgboost as xgb
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
 
 
 def parse_args():
     """Parse job arguments"""
     parser = argparse.ArgumentParser()
-
-    # Hyperparameters for tuning
     parser.add_argument("--num_round", type=int, default=100)
-    parser.add_argument("--max_depth", type=int, default=3)
-    parser.add_argument("--eta", type=float, default=0.2)
+    parser.add_argument("--max_depth", type=int, default=6)
+    parser.add_argument("--eta", type=float, default=0.3)
     parser.add_argument("--subsample", type=float, default=0.9)
     parser.add_argument("--colsample_bytree", type=float, default=0.8)
-    parser.add_argument("--objective", type=str, default="binary:logistic")
-    parser.add_argument("--eval_metric", type=str, default="auc")
-    parser.add_argument("--nfold", type=int, default=3)
-    parser.add_argument("--early_stopping_rounds", type=int, default=3)
+    parser.add_argument("--objective", type=str, default="reg:squarederror")
+    parser.add_argument("--eval_metric", type=str, default="rmse")
+    parser.add_argument("--nfold", type=int, default=5)
+    parser.add_argument("--early_stopping_rounds", type=int, default=10)
 
     # SageMaker specific arguments
     parser.add_argument("--train_data_dir", type=str, default=os.environ.get("SM_CHANNEL_TRAIN"))
@@ -32,11 +36,12 @@ def parse_args():
     parser.add_argument(
         "--output_data_dir", type=str, default=os.environ.get("SM_OUTPUT_DATA_DIR")
     )
+    args, _ = parser.parse_known_args()
+    logger.info(f"Received arguments {args}")
+    return args
 
-    return parser.parse_args()
 
-
-def load_data(data_dir, filename="data.csv"):
+def load_data(data_dir, filename):
     """
     Load data from the specified directory
 
@@ -48,14 +53,38 @@ def load_data(data_dir, filename="data.csv"):
         tuple: Features DataFrame and labels Series
     """
     data = pd.read_csv(f"{data_dir}/{filename}")
-    features = data.drop("wait_time", axis=1)
-    labels = pd.DataFrame(data["wait_time"])
+    features = data.drop("tiempo_total", axis=1)
+    labels = data["tiempo_total"]
     return features, labels
+
+
+def calculate_regression_metrics(y_true, y_pred):
+    """
+    Calculate regression metrics
+
+    Args:
+        y_true: True values
+        y_pred: Predicted values
+
+    Returns:
+        dict: Dictionary containing regression metrics
+    """
+    mse = mean_squared_error(y_true, y_pred)
+    rmse = np.sqrt(mse)
+    mae = mean_absolute_error(y_true, y_pred)
+    r2 = r2_score(y_true, y_pred)
+
+    return {
+        "mse": mse,
+        "rmse": rmse,
+        "mae": mae,
+        "r2": r2
+    }
 
 
 def train_model(args, dtrain, dvalidation):
     """
-    Train XGBoost model with cross-validation
+    Train XGBoost regression model with cross-validation
 
     Args:
         args: Parsed command line arguments
@@ -85,17 +114,27 @@ def train_model(args, dtrain, dvalidation):
     )
 
     # Train final model
-    model = xgb.train(params=params, dtrain=dtrain, num_boost_round=len(cv_results))
+    evallist = [(dtrain, 'train'), (dvalidation, 'validation')]
+    model = xgb.train(
+        params=params,
+        dtrain=dtrain,
+        num_boost_round=len(cv_results),
+        evals=evallist,
+        early_stopping_rounds=args.early_stopping_rounds
+    )
 
     # Generate predictions
     train_pred = model.predict(dtrain)
     validation_pred = model.predict(dvalidation)
 
     # Calculate metrics
-    train_auc = roc_auc_score(dtrain.get_label(), train_pred)
-    validation_auc = roc_auc_score(dvalidation.get_label(), validation_pred)
+    train_metrics = calculate_regression_metrics(dtrain.get_label(), train_pred)
+    validation_metrics = calculate_regression_metrics(dvalidation.get_label(), validation_pred)
 
-    metrics = {"train_auc": train_auc, "validation_auc": validation_auc}
+    metrics = {
+        "train": train_metrics,
+        "validation": validation_metrics
+    }
 
     return model, metrics
 
@@ -117,10 +156,18 @@ def save_model_artifacts(model, metrics, args):
             "subsample": args.subsample,
             "colsample_bytree": args.colsample_bytree,
         },
-        "binary_classification_metrics": {
-            "validation:auc": {"value": metrics["validation_auc"]},
-            "train:auc": {"value": metrics["train_auc"]},
-        },
+        "regression_metrics": {
+            "validation": {
+                "rmse": metrics["validation"]["rmse"],
+                "mae": metrics["validation"]["mae"],
+                "r2": metrics["validation"]["r2"]
+            },
+            "train": {
+                "rmse": metrics["train"]["rmse"],
+                "mae": metrics["train"]["mae"],
+                "r2": metrics["train"]["r2"]
+            }
+        }
     }
 
     # Save metrics
@@ -134,7 +181,7 @@ def save_model_artifacts(model, metrics, args):
         joblib.dump(model, f)
 
 
-def main():
+if __name__ == "__main__":
     """Main training function"""
     args = parse_args()
 
@@ -150,12 +197,15 @@ def main():
     model, metrics = train_model(args, dtrain, dvalidation)
 
     # Log metrics
-    print(f"[0]#011train-auc:{metrics['train_auc']:.2f}")
-    print(f"[0]#011validation-auc:{metrics['validation_auc']:.2f}")
+    logger.info("Training metrics:")
+    logger.info(f"RMSE: {metrics['train']['rmse']:.4f}")
+    logger.info(f"MAE: {metrics['train']['mae']:.4f}")
+    logger.info(f"R2: {metrics['train']['r2']:.4f}")
+
+    logger.info("\nValidation metrics:")
+    logger.info(f"RMSE: {metrics['validation']['rmse']:.4f}")
+    logger.info(f"MAE: {metrics['validation']['mae']:.4f}")
+    logger.info(f"R2: {metrics['validation']['r2']:.4f}")
 
     # Save artifacts
     save_model_artifacts(model, metrics, args)
-
-
-if __name__ == "__main__":
-    main()
