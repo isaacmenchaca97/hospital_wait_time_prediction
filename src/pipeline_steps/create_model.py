@@ -29,11 +29,11 @@ class ModelCreateStep:
         )
 
     def get_create_model_step(self):
-        """Create the model creation step
+        """Create the model creation step for the pipeline
 
         Return:
             CreateModelStep: The configured create model step
         """
         self.create_model()
 
-        return CreateModelStep(name="HospitalWaitTimeModel", model=self.model, inputs=self.inputs)
+        return CreateModelStep(name="CreateModel", model=self.model, inputs=self.inputs)

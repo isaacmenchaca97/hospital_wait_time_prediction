@@ -1,6 +1,7 @@
 from sagemaker.processing import ProcessingInput, ProcessingOutput
 from sagemaker.sklearn.processing import SKLearnProcessor
 from sagemaker.workflow.steps import ProcessingStep
+
 from src.pipeline_config import SCRIPTS_DIR
 
 
@@ -24,11 +25,7 @@ class DataProcessingStep:
         )
 
     def upload_preprocessing_script(self):
-        """Upload preprocessing script to S3.
-
-        Args:
-            script_path: Local path to the preprocessing script. Defaults to 'process.py'
-        """
+        """Upload preprocessing script to S3."""
         self.config.s3_client.upload_file(
             Filename=f"{SCRIPTS_DIR}/process.py",
             Bucket=self.config.write_bucket,

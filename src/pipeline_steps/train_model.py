@@ -1,6 +1,7 @@
 from sagemaker.inputs import TrainingInput
 from sagemaker.workflow.steps import TrainingStep
 from sagemaker.xgboost.estimator import XGBoost
+
 from src.pipeline_config import SCRIPTS_DIR
 
 

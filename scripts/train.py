@@ -1,12 +1,12 @@
 import argparse
 import json
-import os
 import logging
+import os
 
 import joblib
-import pandas as pd
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import numpy as np
+import pandas as pd
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import xgboost as xgb
 
 logger = logging.getLogger()
@@ -74,12 +74,7 @@ def calculate_regression_metrics(y_true, y_pred):
     mae = mean_absolute_error(y_true, y_pred)
     r2 = r2_score(y_true, y_pred)
 
-    return {
-        "mse": mse,
-        "rmse": rmse,
-        "mae": mae,
-        "r2": r2
-    }
+    return {"mse": mse, "rmse": rmse, "mae": mae, "r2": r2}
 
 
 def train_model(args, dtrain, dvalidation):
@@ -114,13 +109,13 @@ def train_model(args, dtrain, dvalidation):
     )
 
     # Train final model
-    evallist = [(dtrain, 'train'), (dvalidation, 'validation')]
+    evallist = [(dtrain, "train"), (dvalidation, "validation")]
     model = xgb.train(
         params=params,
         dtrain=dtrain,
         num_boost_round=len(cv_results),
         evals=evallist,
-        early_stopping_rounds=args.early_stopping_rounds
+        early_stopping_rounds=args.early_stopping_rounds,
     )
 
     # Generate predictions
@@ -131,10 +126,7 @@ def train_model(args, dtrain, dvalidation):
     train_metrics = calculate_regression_metrics(dtrain.get_label(), train_pred)
     validation_metrics = calculate_regression_metrics(dvalidation.get_label(), validation_pred)
 
-    metrics = {
-        "train": train_metrics,
-        "validation": validation_metrics
-    }
+    metrics = {"train": train_metrics, "validation": validation_metrics}
 
     return model, metrics
 
@@ -160,14 +152,14 @@ def save_model_artifacts(model, metrics, args):
             "validation": {
                 "rmse": metrics["validation"]["rmse"],
                 "mae": metrics["validation"]["mae"],
-                "r2": metrics["validation"]["r2"]
+                "r2": metrics["validation"]["r2"],
             },
             "train": {
                 "rmse": metrics["train"]["rmse"],
                 "mae": metrics["train"]["mae"],
-                "r2": metrics["train"]["r2"]
-            }
-        }
+                "r2": metrics["train"]["r2"],
+            },
+        },
     }
 
     # Save metrics

@@ -50,7 +50,7 @@ requires-python = "~=3.9.0"
 [tool.ruff]
 line-length = 99
 src = ["src"]
-include = ["pyproject.toml", "src/**/*.py"]
+include = ["pyproject.toml", "src/**/*.py", "scripts/**/*.py"]
 
 [tool.ruff.lint]
 extend-select = ["I"]  # Add import sorting
