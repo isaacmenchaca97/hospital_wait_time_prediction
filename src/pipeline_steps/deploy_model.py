@@ -34,7 +34,7 @@ class DeployModelStep:
         """
         self.create_lambda_helper()
         return LambdaStep(
-            name="LambdaStepRealTimeDeploy",
+            name="DeployModel",
             lambda_func=self.func,
             inputs={
                 "model_name": self.config.pipeline_model_name,
