@@ -20,7 +20,7 @@ class RegisterModelStep:
         """
         return RegisterModel(
             name="RegisterModel",
-            estimator=self.config.xgb_estimator,
+            estimator=self.train_step.estimator,
             # Fetching S3 location where train step saved model artifacts
             model_data=self.train_step.properties.ModelArtifacts.S3ModelArtifacts,
             content_types=["text/csv"],

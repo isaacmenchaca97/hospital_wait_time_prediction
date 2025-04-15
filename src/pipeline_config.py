@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 import boto3
 from dotenv import load_dotenv
@@ -9,9 +10,6 @@ from sagemaker.workflow.parameters import (
     ParameterInteger,
     ParameterString,
 )
-
-# Load environment variables from .env file if it exists
-load_dotenv()
 
 # Paths
 PROJ_ROOT = Path(__file__).resolve().parents[1]
@@ -26,7 +24,11 @@ EXTERNAL_DATA_DIR = DATA_DIR / "external"
 MODELS_DIR = PROJ_ROOT / "models"
 SCRIPTS_DIR = PROJ_ROOT / "scripts"
 
+DOTENV_PATH = PROJ_ROOT / ".env"
 INSTANCE_TYPE_M4_XL = "ml.m4.xlarge"
+
+# Load environment variables from .env file if it exists
+load_dotenv(DOTENV_PATH)
 
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
@@ -55,7 +57,7 @@ class PipelineConfig:
         self.sm_runtiome_client = boto3.client("sagemaker-runtime")
 
         # Fetch SageMaker execution role
-        self.sagemaker_role = sagemaker.get_execution_role()
+        self.sagemaker_role = os.getenv("sagemaker_role")
 
         # Retrieve training image
         self.training_image = retrieve(framework="xgboost", region=self.region, version="1.3-1")
@@ -63,14 +65,14 @@ class PipelineConfig:
         # Set up S3 paths
         self.setup_s3_paths()
 
-        # Set pipeline parameters
-        self.setup_pipeline_params()
-
         # Set instance configurations
         self.setup_instance_config()
 
         # Set pipeline names
         self.setup_pipeline_names()
+
+        # Set pipeline parameters
+        self.setup_pipeline_params()
 
     def setup_s3_paths(self):
         """Setup all S3 paths used in the pipeline"""
@@ -85,6 +87,14 @@ class PipelineConfig:
         )
         self.model_eval_output_uri = f"s3://{self.write_bucket}/{self.write_prefix}/model_eval"
 
+    def setup_instance_config(self):
+        """Setup instance types and counts"""
+        self.process_instance_type = INSTANCE_TYPE_M4_XL
+        self.train_instance_count = 1
+        self.train_instance_type = INSTANCE_TYPE_M4_XL
+        self.predictor_instance_count = 1
+        self.predictor_instance_type = INSTANCE_TYPE_M4_XL
+
     def setup_pipeline_names(self):
         """Setup names for pipeline components"""
         self.pipeline_name = "HospitalWaitTimePredPipeline"
@@ -93,14 +103,6 @@ class PipelineConfig:
         self.base_job_name_prefix = "hospital-pred"
         self.endpoint_config_name = f"{self.pipeline_model_name}-endpoint-config"
         self.endpoint_name = f"{self.pipeline_model_name}-endpoint"
-
-    def setup_instance_config(self):
-        """Setup instance types and counts"""
-        self.process_instance_type = INSTANCE_TYPE_M4_XL
-        self.train_instance_count = 1
-        self.train_instance_type = INSTANCE_TYPE_M4_XL
-        self.predictor_instance_count = 1
-        self.predictor_instance_type = INSTANCE_TYPE_M4_XL
 
     def setup_pipeline_params(self):
         """Setup pipeline parameters"""

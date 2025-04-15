@@ -32,7 +32,7 @@ class EvaluateModelStep:
 
     def upload_evaluate_script(self):
         """Upload model evaluation script to S3"""
-        self.config.s3_client.upload_fiel(
+        self.config.s3_client.upload_file(
             Filename=f"{SCRIPTS_DIR}/evaluate.py",
             Bucket=self.config.write_bucket,
             Key=f"{self.config.write_prefix}/scripts/evaluate.py",
