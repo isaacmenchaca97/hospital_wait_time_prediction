@@ -23,7 +23,7 @@ class DeployModelStep:
             script=f"{SCRIPTS_DIR}/lambda_deployer.py",
             handler="lambda_deployer.lambda_handler",
             timeout=600,
-            memory_size=10240,
+            memory_size=1024,
         )
 
     def get_lambda_step(self):
