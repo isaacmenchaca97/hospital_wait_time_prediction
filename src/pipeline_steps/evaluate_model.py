@@ -52,6 +52,10 @@ class EvaluateModelStep:
         Return:
             ProcessingStep: The configured evaluate model step
         """
+        self.create_processor()
+        self.upload_evaluate_script()
+        self.create_property_file()
+
         return ProcessingStep(
             name="EvaluateModel",
             processor=self.eval_processor,

@@ -33,6 +33,7 @@ class DeployModelStep:
             LambdaStep: the configured lambda step
         """
         self.create_lambda_helper()
+
         return LambdaStep(
             name="DeployModel",
             lambda_func=self.func,

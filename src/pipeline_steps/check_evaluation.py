@@ -42,6 +42,7 @@ class CheckEvaluationStep:
             ConditionStep: The configured condition step
         """
         self.create_condition()
+
         return ConditionStep(
             name="CheckEvaluation",
             conditions=[self.cond_gte],
