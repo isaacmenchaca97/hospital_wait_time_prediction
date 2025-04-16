@@ -26,7 +26,7 @@ class CheckEvaluationStep:
 
     def create_condition(self):
         """Define condition less than threshols"""
-        self.cond_gte = ConditionLessThanOrEqualTo(
+        self.cond_lte = ConditionLessThanOrEqualTo(
             left=JsonGet(
                 step_name=self.evaluation_step.name,
                 property_file=self.evaluation_step.property_files,
@@ -45,7 +45,7 @@ class CheckEvaluationStep:
 
         return ConditionStep(
             name="CheckEvaluation",
-            conditions=[self.cond_gte],
+            conditions=[self.cond_lte],
             if_steps=[
                 self.create_model_step,
                 self.register_step,
