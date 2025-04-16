@@ -35,8 +35,8 @@ class TrainModelStep:
             hyperparameters=self.static_hyperparameters,
             role=self.config.sagemaker_role,
             # Fetch instance type and count from pipeline parameters
-            instance_count=self.config.train_instance_count,
-            instance_type=self.config.train_instance_type,
+            instance_count=self.config.train_instance_count_param,
+            instance_type=self.config.train_instance_type_param,
             framework_version="1.3-1",
         )
 

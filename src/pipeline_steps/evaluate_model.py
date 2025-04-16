@@ -23,8 +23,8 @@ class EvaluateModelStep:
         self.eval_processor = ScriptProcessor(
             image_uri=self.config.training_image,
             command=["python3"],
-            instance_type=self.config.predictor_instance_type,
-            instance_count=self.config.predictor_instance_count,
+            instance_type=self.config.predictor_instance_type_param,
+            instance_count=self.config.predictor_instance_count_param,
             base_job_name=f"{self.config.base_job_name_prefix}-model-eval",
             sagemaker_session=self.config.sess,
             role=self.config.sagemaker_role,

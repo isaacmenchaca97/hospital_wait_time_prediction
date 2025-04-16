@@ -25,8 +25,8 @@ class RegisterModelStep:
             model_data=self.train_step.properties.ModelArtifacts.S3ModelArtifacts,
             content_types=["text/csv"],
             response_types=["text/csv"],
-            inference_instances=[self.config.predictor_instance_type],
-            transform_instances=[self.config.predictor_instance_type],
+            inference_instances=[self.config.predictor_instance_type_param],
+            transform_instances=[self.config.predictor_instance_type_param],
             model_package_group_name=self.config.model_package_group_name,
             approval_status=self.config.model_approval_status_param,
         )

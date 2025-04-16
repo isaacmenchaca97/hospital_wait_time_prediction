@@ -20,7 +20,7 @@ class DataProcessingStep:
             framework_version="0.23-1",
             role=self.config.sagemaker_role,
             instance_count=1,
-            instance_type=self.config.process_instance_type,
+            instance_type=self.config.process_instance_type_param,
             base_job_name=f"{self.config.base_job_name_prefix}-processing",
         )
 

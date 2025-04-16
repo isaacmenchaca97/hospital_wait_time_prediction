@@ -45,6 +45,8 @@ if __name__ == "__main__":
             pipeline_config.process_instance_type_param,
             pipeline_config.train_instance_type_param,
             pipeline_config.train_instance_count_param,
+            pipeline_config.predictor_instance_type_param,
+            pipeline_config.predictor_instance_count_param,
             pipeline_config.deploy_instance_type_param,
             pipeline_config.deploy_instance_count_param,
             pipeline_config.model_approval_status_param,
@@ -60,4 +62,4 @@ if __name__ == "__main__":
     pipeline_definition = json.loads(pipeline.describe()["PipelineDefinition"])
 
     # Execute Pipeline
-    # start_response = pipeline.start()
+    start_response = pipeline.start()

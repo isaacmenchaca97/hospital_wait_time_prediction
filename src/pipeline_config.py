@@ -94,6 +94,8 @@ class PipelineConfig:
         self.train_instance_type = INSTANCE_TYPE_M4_XL
         self.predictor_instance_count = 1
         self.predictor_instance_type = INSTANCE_TYPE_M4_XL
+        self.deploy_instance_count = 1
+        self.deploy_instance_type = INSTANCE_TYPE_M4_XL
 
     def setup_pipeline_names(self):
         """Setup names for pipeline components"""
@@ -124,14 +126,25 @@ class PipelineConfig:
         )
 
         # Set deployment instance type
-        self.deploy_instance_type_param = ParameterString(
+        self.predictor_instance_type_param = ParameterString(
             name="DeployInstanceType",
             default_value=self.predictor_instance_type,
         )
 
         # Set deployment instance count
-        self.deploy_instance_count_param = ParameterInteger(
+        self.predictor_instance_count_param = ParameterInteger(
             name="DeployInstanceCount", default_value=self.predictor_instance_count
+        )
+
+        # Set deployment instance type
+        self.deploy_instance_type_param = ParameterString(
+            name="DeployInstanceType",
+            default_value=self.deploy_instance_type,
+        )
+
+        # Set deployment instance count
+        self.deploy_instance_count_param = ParameterInteger(
+            name="DeployInstanceCount", default_value=self.deploy_instance_count
         )
 
         # Set model approval param
