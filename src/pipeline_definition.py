@@ -43,6 +43,7 @@ if __name__ == "__main__":
         name=pipeline_config.pipeline_name,
         parameters=[
             pipeline_config.process_instance_type_param,
+            pipeline_config.process_instance_count_param,
             pipeline_config.train_instance_type_param,
             pipeline_config.train_instance_count_param,
             pipeline_config.predictor_instance_type_param,

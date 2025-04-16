@@ -89,6 +89,7 @@ class PipelineConfig:
 
     def setup_instance_config(self):
         """Setup instance types and counts"""
+        self.process_instance_count = 1
         self.process_instance_type = INSTANCE_TYPE_M4_XL
         self.train_instance_count = 1
         self.train_instance_type = INSTANCE_TYPE_M4_XL
@@ -112,6 +113,11 @@ class PipelineConfig:
         self.process_instance_type_param = ParameterString(
             name="ProcessingInstanceType",
             default_value=self.process_instance_type,
+        )
+
+        self.process_instance_count_param = ParameterInteger(
+            name="ProcessingInstanceCount",
+            default_value=self.process_instance_count,
         )
 
         # Set training instance type

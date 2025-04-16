@@ -19,7 +19,7 @@ class DataProcessingStep:
         self.sklearn_processor = SKLearnProcessor(
             framework_version="0.23-1",
             role=self.config.sagemaker_role,
-            instance_count=1,
+            instance_count=self.config.process_instance_count_param,
             instance_type=self.config.process_instance_type_param,
             base_job_name=f"{self.config.base_job_name_prefix}-processing",
         )
