@@ -29,7 +29,7 @@ class CheckEvaluationStep:
         self.cond_lte = ConditionLessThanOrEqualTo(
             left=JsonGet(
                 step_name=self.evaluation_step.name,
-                property_file=self.evaluation_step.property_files,
+                property_file=self.evaluation_step.property_files[0],
                 json_path="regression_metrics.test.rmse",
             ),
             right=0.4,  # Threshold to compare model performance against
