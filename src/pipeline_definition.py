@@ -62,4 +62,4 @@ if __name__ == "__main__":
     pipeline_definition = json.loads(pipeline.describe()["PipelineDefinition"])
 
     # Execute Pipeline
-    start_response = pipeline.start()
+    # start_response = pipeline.start()

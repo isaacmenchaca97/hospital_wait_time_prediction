@@ -127,13 +127,13 @@ class PipelineConfig:
 
         # Set deployment instance type
         self.predictor_instance_type_param = ParameterString(
-            name="DeployInstanceType",
+            name="PredictorInstanceType",
             default_value=self.predictor_instance_type,
         )
 
         # Set deployment instance count
         self.predictor_instance_count_param = ParameterInteger(
-            name="DeployInstanceCount", default_value=self.predictor_instance_count
+            name="PredictorInstanceCount", default_value=self.predictor_instance_count
         )
 
         # Set deployment instance type
