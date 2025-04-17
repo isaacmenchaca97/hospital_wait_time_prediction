@@ -22,7 +22,6 @@ class DataProcessingStep:
             instance_count=self.config.process_instance_count_param,
             instance_type=self.config.process_instance_type_param,
             base_job_name=f"{self.config.base_job_name_prefix}-processing",
-            dependencies=["gender-guesser", "gensim"]
         )
 
     def upload_preprocessing_script(self):

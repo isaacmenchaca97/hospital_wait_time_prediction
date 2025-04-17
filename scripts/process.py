@@ -1,3 +1,8 @@
+import sys
+import subprocess
+
+subprocess.check_call([sys.executable, "-m", "pip", "install", "gender-guesser", "gensim", "xlrd"])
+
 import argparse
 import logging
 import os
