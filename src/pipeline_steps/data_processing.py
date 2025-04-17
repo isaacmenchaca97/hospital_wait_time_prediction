@@ -46,7 +46,7 @@ class DataProcessingStep:
             processor=self.sklearn_processor,
             inputs=[
                 ProcessingInput(
-                    source=self.config.hospital_data_uri, destination="/opt/ml/processing/input"
+                    source=self.config.hospital_data_uri, destination="/opt/ml/processing/hospital_data"
                 )
             ],
             outputs=[

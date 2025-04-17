@@ -34,7 +34,7 @@ def parse_args():
 
 def load_data():
     """Load data from input path"""
-    input_path = os.path.join("/opt/ml/processing/input", "basededatos_50K.xlsx")
+    input_path = os.path.join("/opt/ml/processing/hospital_data", "basededatos_50K.xlsx")
     logger.info(f"Loading data from {input_path}")
     df = pd.read_excel(input_path)
     logger.info(f"Loaded dataset with shape: {df.shape}")
