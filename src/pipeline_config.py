@@ -26,6 +26,7 @@ SCRIPTS_DIR = PROJ_ROOT / "scripts"
 
 DOTENV_PATH = PROJ_ROOT / ".env"
 INSTANCE_TYPE_M4_XL = "ml.m4.xlarge"
+INSTANCE_TYPE_T3_M = "ml.t3.medium"
 
 # Load environment variables from .env file if it exists
 load_dotenv(DOTENV_PATH)
@@ -90,7 +91,7 @@ class PipelineConfig:
     def setup_instance_config(self):
         """Setup instance types and counts"""
         self.process_instance_count = 1
-        self.process_instance_type = INSTANCE_TYPE_M4_XL
+        self.process_instance_type = INSTANCE_TYPE_T3_M
         self.train_instance_count = 1
         self.train_instance_type = INSTANCE_TYPE_M4_XL
         self.predictor_instance_count = 1
